@@ -1,0 +1,11 @@
+.DS_Store
+.vscode/
+.venv/
+data/
+.env
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+docs/diagrama.md
+**__init__.py**
