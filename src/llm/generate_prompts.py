@@ -115,7 +115,7 @@ def treat_demand_profile(row: pd.Series) -> str:
         str: Diagnosis or context string.
     """
     diag = str(row.get('DIAGNOSTICO_PREDOMINANTE', 'N/A'))
-    focus = row.get('PROCEDIMENTO_AP_PREDOMINANTE', 'Atendimentos Gerais'')
+    focus = row.get('PROCEDIMENTO_AP_PREDOMINANTE', 'Atendimentos Gerais')
     
     # Check for various forms of null/empty
     if diag.lower() in ['nan', 'n/a', 'none', ''] or pd.isna(row.get('DIAGNOSTICO_PREDOMINANTE')):
@@ -147,7 +147,7 @@ def detect_sentinel_event(hist_df: pd.DataFrame, current_row: pd.Series) -> str:
         prod_peaks = hist_df[(hist_df['TOTAL_PRODUCAO_AP'] > (avg_prod * 1.5)) & (hist_df['TOTAL_PRODUCAO_AP'] > 50)]
         if not prod_peaks.empty:
             p = prod_peaks.iloc[-1]
-            alerts.append(f"PRODUCTION PEAK: In {p['COMPETENCIA']} there was a volume of {int(p['TOTAL_PRODUCAO_AP'])} attendances ({p['PROCEDIMENTO_AP_PREDOMINANTE']}).")
+            alerts.append(f"PRODUÇÃO PICO: Em {p['COMPETENCIA']} houve um volume de {int(p['TOTAL_PRODUCAO_AP'])} atendimentos ({p['PROCEDIMENTO_AP_PREDOMINANTE']}).")
 
     # 2. Analyze Hospitalization Peaks (Outbreaks)
     avg_adm = hist_df['TOTAL_INTERNACOES'].mean()
@@ -156,19 +156,19 @@ def detect_sentinel_event(hist_df: pd.DataFrame, current_row: pd.Series) -> str:
         adm_peaks = hist_df[(hist_df['TOTAL_INTERNACOES'] > (avg_adm * 1.5)) & (hist_df['TOTAL_INTERNACOES'] > 5)]
         if not adm_peaks.empty:
             p = adm_peaks.iloc[-1]
-            alerts.append(f"ADMISSION PEAK: In {p['COMPETENCIA']} there was an outbreak/increase of {int(p['TOTAL_INTERNACOES'])} cases ({p['DIAGNOSTICO_PREDOMINANTE']}).")
+            alerts.append(f"PICO DE ADMISSÕES: Em {p['COMPETENCIA']} houve um surto/aumento de {int(p['TOTAL_INTERNACOES'])} casos ({p['DIAGNOSTICO_PREDOMINANTE']}).")
     
     # 3. Analyze Abrupt Production Drops (Access/Supply Rupture)
     current_prod = float(current_row.get('TOTAL_PRODUCAO_AP', 0))
     if avg_prod > 50 and current_prod < (avg_prod * 0.5):
-        alerts.append(f"ABRUPT PRODUCTION DROP: Current volume ({int(current_prod)}) is less than 50% of historical average ({int(avg_prod)}). Investigate access blockage due to severe drought, vessel breakdown, or lack of supplies.")
+        alerts.append(f"QUEDA REPENTINA NA PRODUÇÃO: Volume atual ({int(current_prod)}) é inferior a 50% da média histórica ({int(avg_prod)}). Investigar bloqueios de acesso devido à seca severa, avaria de embarcações ou falta de suprimentos.")
 
     if alerts:
-        msg = "⚠️ **SURVEILLANCE ALERT:** " + " | ".join(alerts)
-        msg += " Protocol requires immediate investigation of causes and contingency plan to ensure care continuity."
+        msg = "⚠️ **ALERTA DE VIGILÂNCIA:** " + " | ".join(alerts)
+        msg += " O protocolo exige investigação imediata das causas e um plano de contingência para garantir a continuidade do atendimento."
         return msg
     
-    return "No relevant statistical deviation detected in 90-day history."
+    return "Não foi detectada nenhuma variação estatística relevante no histórico de 90 dias."
 
 
 def generate_prompt(row: pd.Series, history: str = "Not available", sentinel_intelligence: str = "") -> str:
@@ -204,7 +204,7 @@ Atue como um Médico Sanitarista especialista em Saúde Pública na Amazônia.
 # DADOS RELEVANTES (Mês Atual)
 - **Foco da Análise:** {focus_context['focus_type']}
 - **Perfil da Demanda / Diagnóstico:** {demand_profile}
-- **Sinais Fracos / Alertas:** {row.get('SINAIS_FRACOS', 'Stable')}
+- **Sinais Fracos / Alertas:** {row.get('SINAIS_FRACOS', 'Estável')}
 - **Doença Hídrica Predominante:** {row.get('DOENCA_HIDRICA_PREDOMINANTE', 'None')}
 - **Procedimento APS mais realizado:** {row.get('PROCEDIMENTO_AP_PREDOMINANTE', 'N/A')}
 
@@ -271,13 +271,13 @@ def main() -> None:
             if not hist_rows.empty:
                 hist_text = ""
                 for _, h_row in hist_rows.iterrows():
-                    hist_text += f"- {h_row['COMPETENCIA']} ({h_row['ESTACAO_AMAZONICA']}): {int(h_row['TOTAL_INTERNACOES'])} adm., Diag: {h_row['DIAGNOSTICO_PREDOMINANTE']}, Alert: {h_row['SINAIS_FRACOS']}\n"
+                    hist_text += f"- {h_row['COMPETENCIA']} ({h_row['ESTACAO_AMAZONICA']}): {int(h_row['TOTAL_INTERNACOES'])} adm., Diag: {h_row['DIAGNOSTICO_PREDOMINANTE']}, Alerta: {h_row['SINAIS_FRACOS']}\n"
                 history = hist_text.strip()
                 # Peak Detection Intelligence
                 sentinel_intelligence = detect_sentinel_event(hist_rows, row)
             else:
-                history = "First record of this unit in monitoring period."
-                sentinel_intelligence = "Insufficient history for statistical analysis."
+                history = "Primeiro registro desta unidade no período de monitoramento."
+                sentinel_intelligence = "Histórico insuficiente para análise estatística."
             
             prompt_text = generate_prompt(row, history, sentinel_intelligence)
             

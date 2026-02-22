@@ -39,7 +39,7 @@ def get_weak_signals(group: pd.Series) -> str:
         group (pd.Series): Series of diagnosis codes/descriptions.
         
     Returns:
-        str: Alert message if sentinel disease found, otherwise 'Stable' or secondary diagnosis.
+        str: Alert message if sentinel disease found, otherwise 'Estável' or secondary diagnosis.
     """
     if group.empty:
         return "None"
@@ -47,11 +47,11 @@ def get_weak_signals(group: pd.Series) -> str:
     # 1. Priority: Sentinel Diseases (Even with few cases)
     # Mapping codes to English names for the alert
     sentinels = {
-        'A00': 'Cholera',
-        'B50': 'Malaria Falciparum',
-        'B51': 'Malaria Vivax',
-        'A27': 'Leptospirosis',
-        'A01': 'Typhoid Fever'
+        'A00': 'Cólera',
+        'B50': 'Malária por Plasmodium falciparum',
+        'B51': 'Malária por Plasmodium vivax',
+        'A27': 'Leptospirose',
+        'A01': 'Febre Tifoide'
     }
     
     counts = group.value_counts()
@@ -66,9 +66,9 @@ def get_weak_signals(group: pd.Series) -> str:
         second_diag = counts.index[1]
         # Only report if not "N/A"
         if second_diag != "N/A" and counts.iloc[1] > 0:
-            return f"Emerging: {second_diag}"
+            return f"Emergentes: {second_diag}"
     
-    return "Stable"
+    return "Estável"
 
 
 def build_gold_table() -> None:
@@ -192,7 +192,7 @@ def build_gold_table() -> None:
         'TOTAL_PRODUCAO_AP': 0,
         'DIAGNOSTICO_PREDOMINANTE': 'N/A',
         'DOENCA_HIDRICA_PREDOMINANTE': 'None',
-        'SINAIS_FRACOS': 'Stable',
+        'SINAIS_FRACOS': 'Estável',
         'PROCEDIMENTO_AP_PREDOMINANTE': 'N/A'
     })
     
