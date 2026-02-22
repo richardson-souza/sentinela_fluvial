@@ -44,7 +44,7 @@ To make our system predictive, we calculate the Z-Score of the production volume
 
 Our solution follows a **Bronze-Silver-Gold** data lakehouse architecture, culminating in a Retrieval-Augmented Generation (RAG) approach using MedGemma.
 
-![Architecture Diagram](docs/architecture_diagram)
+![Architecture Diagram](docs/architecture_diagram.png)
 
 ### 1. Data Ingestion (ETL)
 We ingest raw data from the Brazilian Unified Health System (DataSUS), specifically:
