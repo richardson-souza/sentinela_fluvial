@@ -6,6 +6,8 @@
 #### **Your team**
 *   **Richardson Allan Ferreira de Souza** - Data Scientist & AI Engineer (ETL Pipeline, Prompt Engineering, and LLM Integration).
 
+
+
 #### **Problem statement**
 **Bridging the Amazonian Data Desert**  
 The Brazilian Amazon relies on Riverine Basic Health Units (UBSF) to reach isolated communities. However, traditional health dashboards fail here because they ignore the **Amazonian hydrological cycle**. As proven by our EDA, seasonality is a clinical barrier: ambulatory production experiences massive variance between *Vazante* (dry) and *Cheia* (flood) seasons. Fluvial units show extreme operational vulnerability compared to terrestrial units.
